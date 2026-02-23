@@ -10,11 +10,13 @@ class MenuScreen extends StatefulWidget {
 
 class _MenuScreenState extends State<MenuScreen> {
   int _selectedCategoryIndex = 1;
+  final Map<int, int> _cartItems = {}; // Track quantity of each product
+  double _totalPrice = 0.0;
 
   final List<Map<String, dynamic>> _categories = [
-    {'name': 'Appetizers', 'icon': Icons.fastfood_outlined}, // Placeholder icon
+    {'name': 'Appetizers', 'icon': Icons.fastfood_outlined},
     {'name': 'Main Dishes', 'icon': Icons.set_meal_outlined},
-    {'name': 'Pizza', 'icon': Icons.local_pizza_outlined},
+    {'name': 'Pizzas', 'icon': Icons.local_pizza_outlined},
     {'name': 'Dessert', 'icon': Icons.cake_outlined},
     {'name': 'Hot Drinks', 'icon': Icons.coffee_outlined},
     {'name': 'Cold Drinks', 'icon': Icons.local_drink_outlined},
@@ -52,6 +54,59 @@ class _MenuScreenState extends State<MenuScreen> {
       'image': 'assets/images/burgers.png',
     },
   ];
+
+  void _addToCart(int productIndex) {
+    setState(() {
+      _cartItems[productIndex] = (_cartItems[productIndex] ?? 0) + 1;
+      _updateTotal();
+    });
+  }
+
+  void _removeFromCart(int productIndex) {
+    setState(() {
+      if (_cartItems.containsKey(productIndex) &&
+          _cartItems[productIndex]! > 0) {
+        _cartItems[productIndex] = _cartItems[productIndex]! - 1;
+        if (_cartItems[productIndex] == 0) {
+          _cartItems.remove(productIndex);
+        }
+      }
+      _updateTotal();
+    });
+  }
+
+  void _updateTotal() {
+    _totalPrice = 0.0;
+    _cartItems.forEach((productIndex, quantity) {
+      _totalPrice += _products[productIndex]['price'] * quantity;
+    });
+  }
+
+  int _getCartItemCount() {
+    int count = 0;
+    _cartItems.forEach((_, quantity) {
+      count += quantity;
+    });
+    return count;
+  }
+
+  void _checkout() {
+    if (_cartItems.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please add items to cart before checkout'),
+          duration: Duration(milliseconds: 1500),
+        ),
+      );
+      return;
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Proceeding to checkout...'),
+        duration: Duration(milliseconds: 1500),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -213,8 +268,12 @@ class _MenuScreenState extends State<MenuScreen> {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 11,
-                      fontWeight: isSelected ? FontWeight.w800 : FontWeight.w700,
-                      color: isSelected ? Colors.black87 : const Color(0xFF555555),
+                      fontWeight: isSelected
+                          ? FontWeight.w800
+                          : FontWeight.w700,
+                      color: isSelected
+                          ? Colors.black87
+                          : const Color(0xFF555555),
                     ),
                   ),
                 ],
@@ -239,8 +298,10 @@ class _MenuScreenState extends State<MenuScreen> {
       itemCount: _products.length,
       itemBuilder: (context, index) {
         final product = _products[index];
+        final quantity = _cartItems[index] ?? 0;
         return Stack(
           children: [
+            // Main product card container
             Container(
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -250,118 +311,181 @@ class _MenuScreenState extends State<MenuScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-              // Product Image container (grey box)
-              Container(
-                height: 110,
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFF2F2F2),
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(16),
-                    topRight: Radius.circular(16),
-                    bottomLeft: Radius.circular(16),
-                    bottomRight: Radius.circular(16),
-                  ),
-                ),
-                margin: const EdgeInsets.all(4),
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  alignment: Alignment.center,
-                  children: [
-                    // The food plate overlapping boundaries
-                    Positioned(
-                      top: 10,
-                      bottom: 0,
-                      child: Container(
-                        width: 100,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.15),
-                              blurRadius: 10,
-                              offset: const Offset(0, 5),
-                            ),
-                          ],
-                        ),
-                        child: ClipOval(
+                  // Product Image container (grey box)
+                  Container(
+                    height: 110,
+                    width: double.infinity,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFF2F2F2),
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(16),
+                        topRight: Radius.circular(16),
+                        bottomLeft: Radius.circular(16),
+                        bottomRight: Radius.circular(16),
+                      ),
+                    ),
+                    margin: const EdgeInsets.all(4),
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      alignment: Alignment.center,
+                      children: [
+                        // The food plate overlapping boundaries
+                        Positioned(
+                          top: 10,
+                          bottom: 0,
                           child: Container(
-                            color: Colors.white,
-                            padding: const EdgeInsets.all(4),
+                            width: 100,
+                            height: 100,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.15),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 5),
+                                ),
+                              ],
+                            ),
                             child: ClipOval(
-                              child: Image.asset(
-                                product['image'],
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) =>
-                                    const Icon(Icons.fastfood,
-                                        size: 40, color: Colors.grey),
+                              child: Container(
+                                color: Colors.white,
+                                padding: const EdgeInsets.all(4),
+                                child: ClipOval(
+                                  child: Image.asset(
+                                    product['image'],
+                                    fit: BoxFit.cover,
+                                    errorBuilder:
+                                        (context, error, stackTrace) =>
+                                            const Icon(
+                                              Icons.fastfood,
+                                              size: 40,
+                                              color: Colors.grey,
+                                            ),
+                                  ),
+                                ),
                               ),
                             ),
                           ),
                         ),
+                      ],
+                    ),
+                  ),
+                  // Product Info section
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                product['name'],
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w800,
+                                  color: Color(0xFF2D2D2D),
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'EGP ${product['price'].toStringAsFixed(2)}',
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(0xFF555555),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-
-              // Product Info
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+            ),
+            // Floating add/remove button
+            Positioned(
+              bottom: 12,
+              right: 12,
+              child: quantity == 0
+                  ? GestureDetector(
+                      onTap: () => _addToCart(index),
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        decoration: const BoxDecoration(
+                          color: AppColors.primary,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.add,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ),
+                    )
+                  : Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(
+                          color: AppColors.primary,
+                          width: 1.5,
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(
-                            product['name'],
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w800,
-                              color: Color(0xFF2D2D2D),
+                          GestureDetector(
+                            onTap: () => _removeFromCart(index),
+                            child: const SizedBox(
+                              width: 24,
+                              height: 28,
+                              child: Icon(
+                                Icons.remove,
+                                size: 14,
+                                color: AppColors.primary,
+                              ),
                             ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'EGP ${product['price'].toStringAsFixed(2)}',
-                            style: const TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
-                              color: Color(0xFF555555),
+                          Container(
+                            color: AppColors.primary.withOpacity(0.1),
+                            padding: const EdgeInsets.symmetric(horizontal: 6),
+                            child: Text(
+                              quantity.toString(),
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.primary,
+                              ),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () => _addToCart(index),
+                            child: const SizedBox(
+                              width: 24,
+                              height: 28,
+                              child: Icon(
+                                Icons.add,
+                                size: 14,
+                                color: AppColors.primary,
+                              ),
                             ),
                           ),
                         ],
                       ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-          // Floating add button
-          Positioned(
-            bottom: 12,
-            right: 12,
-            child: Container(
-              width: 28,
-              height: 28,
-              decoration: const BoxDecoration(
-                color: AppColors.primary,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.add,
-                color: Colors.white,
-                size: 20,
-              ),
+                    ),
             ),
-          ),
+          ],
         );
       },
     );
@@ -380,25 +504,53 @@ class _MenuScreenState extends State<MenuScreen> {
         top: false,
         child: Row(
           children: [
-            // Cart icon
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
+            // Cart icon with badge
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.04),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              child: const Icon(
-                Icons.shopping_cart_outlined,
-                color: AppColors.primary,
-                size: 28,
-              ),
+                  child: const Icon(
+                    Icons.shopping_cart_outlined,
+                    color: AppColors.primary,
+                    size: 28,
+                  ),
+                ),
+                if (_getCartItemCount() > 0)
+                  Positioned(
+                    top: -4,
+                    right: -4,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
+                      decoration: const BoxDecoration(
+                        color: AppColors.primary,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Text(
+                        _getCartItemCount().toString(),
+                        style: const TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ),
             const SizedBox(width: 16),
 
@@ -419,16 +571,16 @@ class _MenuScreenState extends State<MenuScreen> {
                   crossAxisAlignment: CrossAxisAlignment.baseline,
                   textBaseline: TextBaseline.alphabetic,
                   children: [
-                    const Text(
-                      '0.00 ',
-                      style: TextStyle(
+                    Text(
+                      _totalPrice.toStringAsFixed(2),
+                      style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w800,
                         color: AppColors.primary,
                       ),
                     ),
                     Text(
-                      'EGP',
+                      ' EGP',
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
@@ -445,13 +597,11 @@ class _MenuScreenState extends State<MenuScreen> {
             // Checkout button
             Expanded(
               child: ElevatedButton(
-                onPressed: () {
-                  // TODO: Perform checkout action
-                },
+                onPressed: _checkout,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
-                  elevation: 0,
+                  elevation: 2,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -459,7 +609,11 @@ class _MenuScreenState extends State<MenuScreen> {
                 ),
                 child: const Text(
                   'Checkout',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.5,
+                  ),
                 ),
               ),
             ),

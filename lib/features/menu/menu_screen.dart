@@ -26,32 +26,32 @@ class _MenuScreenState extends State<MenuScreen> {
     {
       'name': 'Main Dish 1',
       'price': 140.00,
-      'image': 'assets/images/burgers.png',
+      'image': 'assets/images/paneer.png',
     },
     {
       'name': 'Main Dish 2',
       'price': 140.00,
-      'image': 'assets/images/burgers.png',
+      'image': 'assets/images/paneer.png',
     },
     {
       'name': 'Main Dish 3',
       'price': 140.00,
-      'image': 'assets/images/burgers.png',
+      'image': 'assets/images/paneer.png',
     },
     {
       'name': 'Main Dish 4',
       'price': 140.00,
-      'image': 'assets/images/burgers.png',
+      'image': 'assets/images/paneer.png',
     },
     {
       'name': 'Main Dish 5',
       'price': 140.00,
-      'image': 'assets/images/burgers.png',
+      'image': 'assets/images/paneer.png',
     },
     {
       'name': 'Main Dish 6',
       'price': 140.00,
-      'image': 'assets/images/burgers.png',
+      'image': 'assets/images/paneer.png',
     },
   ];
 
@@ -184,12 +184,12 @@ class _MenuScreenState extends State<MenuScreen> {
             ),
           ),
 
-          // Header Image (Burgers)
+          // Header Image (Paneer)
           Positioned(
             right: -20,
             top: 10,
             child: Image.asset(
-              'assets/images/burgers.png',
+              'assets/images/paneer.png',
               height: 120,
               fit: BoxFit.contain,
               errorBuilder: (context, error, stackTrace) {

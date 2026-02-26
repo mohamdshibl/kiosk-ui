@@ -190,7 +190,7 @@ class _MenuScreenState extends State<MenuScreen> {
             right: -20,
             top: 10,
             child: Image.asset(
-              'assets/images/baneer.png',
+              'assets/images/banner.png',
               height: 120,
               fit: BoxFit.contain,
               errorBuilder: (context, error, stackTrace) {

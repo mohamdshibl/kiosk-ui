@@ -1,9 +1,7 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../app/theme/app_colors.dart';
 import '../cart/cart_screen.dart';
 import '../product_detail/product_detail_screen.dart';
-import '../tap_to_order/tap_to_order_screen.dart';
 
 class MenuScreen extends StatefulWidget {
   const MenuScreen({super.key});
@@ -16,14 +14,6 @@ class _MenuScreenState extends State<MenuScreen> {
   int _selectedCategoryIndex = 1;
   final Map<int, int> _cartItems = {};
   double _totalPrice = 0.0;
-
-  // Kiosk timeout
-  Timer? _inactivityTimer;
-  Timer? _countdownTimer;
-  OverlayEntry? _overlayEntry;
-  int _countdownValue = 10;
-  static const int _inactivitySeconds = 30;
-  static const int _countdownSeconds = 10;
 
   final List<Map<String, dynamic>> _categories = [
     {'name': 'Appetizers', 'icon': Icons.fastfood_outlined},
@@ -128,85 +118,35 @@ class _MenuScreenState extends State<MenuScreen> {
   @override
   void initState() {
     super.initState();
-    _resetInactivityTimer();
   }
 
   @override
   void dispose() {
-    _inactivityTimer?.cancel();
-    _countdownTimer?.cancel();
-    _overlayEntry?.remove();
     super.dispose();
-  }
-
-  void _resetInactivityTimer() {
-    _inactivityTimer?.cancel();
-    _overlayEntry?.remove();
-    _overlayEntry = null;
-    _inactivityTimer = Timer(
-      const Duration(seconds: _inactivitySeconds),
-      _showTimeoutOverlay,
-    );
-  }
-
-  void _showTimeoutOverlay() {
-    _countdownValue = _countdownSeconds;
-    _overlayEntry = OverlayEntry(
-      builder: (ctx) => _TimeoutOverlay(
-        countdownValue: _countdownValue,
-        onTouch: () {
-          _countdownTimer?.cancel();
-          _overlayEntry?.remove();
-          _overlayEntry = null;
-          _resetInactivityTimer();
-        },
-      ),
-    );
-    Overlay.of(context).insert(_overlayEntry!);
-
-    _countdownTimer?.cancel();
-    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      _countdownValue--;
-      _overlayEntry?.markNeedsBuild();
-      if (_countdownValue <= 0) {
-        timer.cancel();
-        _overlayEntry?.remove();
-        _overlayEntry = null;
-        if (mounted) {
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (_) => const TapToOrderScreen()),
-            (route) => false,
-          );
-        }
-      }
-    });
   }
 
   // ── Build ─────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
-    return Listener(
-      onPointerDown: (_) => _resetInactivityTimer(),
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: SafeArea(
-          bottom: false,
-          child: Column(
-            children: [
-              _buildHeader(),
-              Expanded(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildCategoriesSidebar(),
-                    Expanded(child: _buildProductsGrid()),
-                  ],
-                ),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            _buildHeader(),
+            Expanded(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildCategoriesSidebar(),
+                  Expanded(child: _buildProductsGrid()),
+                ],
               ),
-              _buildBottomBar(),
-            ],
-          ),
+            ),
+            _buildBottomBar(),
+          ],
         ),
       ),
     );
@@ -219,7 +159,7 @@ class _MenuScreenState extends State<MenuScreen> {
       decoration: const BoxDecoration(color: Colors.white),
       child: Image.asset(
         'assets/images/banner.png',
-        fit: BoxFit.cover,
+        fit: BoxFit.fill,
         errorBuilder: (context, error, stackTrace) => const Center(
           child: Icon(Icons.broken_image, size: 50, color: Colors.grey),
         ),
@@ -467,7 +407,7 @@ class _MenuScreenState extends State<MenuScreen> {
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
       decoration: const BoxDecoration(
-        color: Colors.white,
+        color: Color(0xFFEAEAEA),
         border: Border(top: BorderSide(color: Color(0xFFEEEEEE))),
         boxShadow: [
           BoxShadow(
@@ -564,60 +504,6 @@ class _MenuScreenState extends State<MenuScreen> {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-// ── Kiosk Timeout Overlay ─────────────────────────────────
-class _TimeoutOverlay extends StatelessWidget {
-  final int countdownValue;
-  final VoidCallback onTouch;
-
-  const _TimeoutOverlay({required this.countdownValue, required this.onTouch});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTouch,
-      child: Container(
-        color: Colors.black.withOpacity(0.75),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'Touch anywhere to continue ordering',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'The order will be cancelled in ....',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white70,
-                ),
-              ),
-              const SizedBox(height: 24),
-              Text(
-                '$countdownValue',
-                style: const TextStyle(
-                  fontSize: 80,
-                  fontWeight: FontWeight.w900,
-                  color: Colors.white,
-                  height: 1,
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

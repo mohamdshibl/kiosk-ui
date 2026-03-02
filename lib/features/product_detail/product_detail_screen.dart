@@ -4,10 +4,7 @@ import '../../app/theme/app_colors.dart';
 class ProductDetailScreen extends StatefulWidget {
   final Map<String, dynamic> product;
 
-  const ProductDetailScreen({
-    super.key,
-    required this.product,
-  });
+  const ProductDetailScreen({super.key, required this.product});
 
   @override
   State<ProductDetailScreen> createState() => _ProductDetailScreenState();
@@ -59,9 +56,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     // TODO: Add to cart with selected options
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(
-          'Added ${_quantity}x ${widget.product['name']} to cart',
-        ),
+        content: Text('Added ${_quantity}x ${widget.product['name']} to cart'),
         duration: const Duration(milliseconds: 1500),
       ),
     );
@@ -195,10 +190,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               // Quantity selector
               Container(
                 decoration: BoxDecoration(
-                  border: Border.all(
-                    color: AppColors.primary,
-                    width: 1.5,
-                  ),
+                  border: Border.all(color: AppColors.primary, width: 1.5),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
@@ -213,7 +205,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       child: const SizedBox(
                         width: 32,
                         height: 32,
-                        child: Icon(Icons.remove, size: 14, color: AppColors.primary),
+                        child: Icon(
+                          Icons.remove,
+                          size: 14,
+                          color: AppColors.primary,
+                        ),
                       ),
                     ),
                     Container(
@@ -235,7 +231,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       child: const SizedBox(
                         width: 32,
                         height: 32,
-                        child: Icon(Icons.add, size: 14, color: AppColors.primary),
+                        child: Icon(
+                          Icons.add,
+                          size: 14,
+                          color: AppColors.primary,
+                        ),
                       ),
                     ),
                   ],
@@ -244,10 +244,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             ],
           ),
           const SizedBox(height: 20),
-          Divider(
-            color: Colors.grey.withOpacity(0.3),
-            thickness: 1,
-          ),
+          Divider(color: Colors.grey.withOpacity(0.3), thickness: 1),
         ],
       ),
     );
@@ -356,10 +353,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             ),
 
             const SizedBox(height: 12),
-            Divider(
-              color: Colors.grey.withOpacity(0.3),
-              thickness: 1,
-            ),
+            Divider(color: Colors.grey.withOpacity(0.3), thickness: 1),
           ],
         ),
       );
@@ -367,8 +361,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   Widget _buildBottomButtons() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+    return Container(
+      decoration: const BoxDecoration(
+        color: Color(0xFFEAEAEA),
+        border: Border(top: BorderSide(color: Color(0xFFEEEEEE))),
+      ),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
       child: SafeArea(
         top: false,
         child: Row(
@@ -381,10 +379,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    border: Border.all(
-                      color: AppColors.primary,
-                      width: 2,
-                    ),
+                    border: Border.all(color: AppColors.primary, width: 2),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Center(
@@ -417,10 +412,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 ),
                 child: const Text(
                   'Add to cart',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
                 ),
               ),
             ),

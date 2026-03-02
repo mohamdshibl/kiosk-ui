@@ -74,7 +74,7 @@ class _CartScreenState extends State<CartScreen> {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
-                  color: Color(0xFF2D2D2D),
+                  color: Color(0xFFFFFFFF),
                 ),
               ),
               const SizedBox(height: 16),
@@ -214,13 +214,20 @@ class _CartScreenState extends State<CartScreen> {
           // Header
           _buildHeader(),
 
-          const Padding(
-            padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
             child: Row(
               children: [
-                Icon(Icons.arrow_back, color: Colors.black54, size: 24),
-                SizedBox(width: 12),
-                Text(
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.black54,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Text(
                   'Your Cart',
                   style: TextStyle(
                     fontSize: 18,
@@ -273,16 +280,6 @@ class _CartScreenState extends State<CartScreen> {
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) => const Center(
                 child: Icon(Icons.broken_image, size: 50, color: Colors.grey),
-              ),
-            ),
-          ),
-          Positioned(
-            left: 10,
-            top: 10,
-            child: SafeArea(
-              child: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.black54),
-                onPressed: () => Navigator.pop(context),
               ),
             ),
           ),
@@ -437,7 +434,7 @@ class _CartScreenState extends State<CartScreen> {
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
       decoration: const BoxDecoration(
-        color: Colors.white,
+        color: Color(0xFFEAEAEA),
         border: Border(top: BorderSide(color: Color(0xFFEEEEEE))),
       ),
       child: Row(

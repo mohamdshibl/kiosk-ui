@@ -316,7 +316,7 @@ class _PaymentScreenState extends State<PaymentScreen>
   // ── Reusable order summary content ───────────────────
   Widget _buildOrderSummaryContent() {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      //crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
           'Order Summary:',
@@ -332,7 +332,7 @@ class _PaymentScreenState extends State<PaymentScreen>
           return Padding(
             padding: const EdgeInsets.only(bottom: 8),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Text(
                   '${item['quantity']}x ${item['name']}',
@@ -673,7 +673,7 @@ class _PaymentScreenState extends State<PaymentScreen>
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
       decoration: const BoxDecoration(
-        color: Colors.white,
+        color: Color(0xFFEAEAEA),
         border: Border(top: BorderSide(color: Color(0xFFEEEEEE))),
       ),
       child: Row(
